@@ -1,3 +1,4 @@
+// Capability categories a dashboard surface can expose.
 export type DashCapabilityKind =
   | "navigate"
   | "read"
