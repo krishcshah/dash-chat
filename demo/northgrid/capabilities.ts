@@ -184,6 +184,53 @@ export const northgridCapabilityDescriptors: DashCapabilityDescriptor[] = [
     confirmation: "never",
   },
   {
+    id: "top-customers",
+    label: "Top customers by spend",
+    description:
+      "Rank customers by lifetime spend. Use for questions about the most profitable, highest-spending, biggest, or best customers or accounts.",
+    kind: "read",
+    route: "customers",
+    fields: [
+      { name: "limit", label: "Number of customers", type: "integer", required: false, placeholder: "1" },
+    ],
+    examples: [
+      "Who is the most profitable customer?",
+      "Who spends the most?",
+      "Top 3 customers by lifetime spend",
+      "Show our biggest accounts",
+    ],
+    confirmation: "never",
+  },
+  {
+    id: "revenue-overview",
+    label: "Revenue overview",
+    description:
+      "Report total revenue, paid order value, outstanding invoice balance, and customer count across the workspace.",
+    kind: "read",
+    route: "overview",
+    examples: [
+      "What is our total revenue?",
+      "How much have customers paid?",
+      "How much is outstanding?",
+      "What are we owed?",
+    ],
+    confirmation: "never",
+  },
+  {
+    id: "plan-leaders",
+    label: "Plan leaders",
+    description:
+      "Show the highest-spending customer on each plan tier (Bench, Workshop, Foundry).",
+    kind: "read",
+    route: "analytics",
+    examples: [
+      "Which customers lead each plan?",
+      "Best customer per plan",
+      "Who is our top Foundry account?",
+    ],
+    confirmation: "never",
+  },
+  {
     id: "create-customer",
     label: "Create customer",
     description: "Create a customer account and add it to the customer table.",
@@ -464,6 +511,12 @@ function money(value: number, cents = false) {
   }).format(value)
 }
 
+/** Parses a formatted currency string like "$34,210.00" back into a number. */
+function moneyValue(formatted: string) {
+  const parsed = Number(String(formatted).replace(/[^0-9.\-]/g, ""))
+  return Number.isFinite(parsed) ? parsed : 0
+}
+
 function initials(name: string) {
   return name
     .split(/\s+/)
@@ -572,6 +625,55 @@ export function createNorthgridCapabilities(
               : "No customers matched that request.",
             customers
           )
+        }
+        case "top-customers": {
+          adapter.navigate("customers")
+          const limit = Number.isFinite(amount(input, "limit")) ? Math.max(1, Math.min(10, amount(input, "limit"))) : 1
+          const ranked = [...adapter.getCustomers()].sort((a, b) => moneyValue(b.spend) - moneyValue(a.spend))
+          const top = ranked.slice(0, limit)
+          const leader = top[0]
+          const message =
+            limit === 1 && leader
+              ? `${leader.name} is the most profitable customer, with ${leader.spend} lifetime spend on the ${leader.plan} plan (${leader.email}).`
+              : `Top ${top.length} customers by lifetime spend: ${top.map((c, i) => `${i + 1}. ${c.name} (${c.spend}, ${c.plan})`).join("; ")}.`
+          return handlerResult(message, top)
+        }
+        case "revenue-overview": {
+          adapter.navigate("analytics")
+          const customers = adapter.getCustomers()
+          const orders = adapter.getOrders()
+          const invoices = adapter.getInvoices()
+          const lifetimeValue = customers.reduce((sum, c) => sum + moneyValue(c.spend), 0)
+          const paidOrders = orders.filter((o) => o.status === "Paid")
+          const paidRevenue = paidOrders.reduce((sum, o) => sum + moneyValue(o.amount), 0)
+          const outstanding = invoices
+            .filter((i) => i.status === "Sent" || i.status === "Draft")
+            .reduce((sum, i) => sum + moneyValue(i.amount), 0)
+          const top = [...customers].sort((a, b) => moneyValue(b.spend) - moneyValue(a.spend))[0]
+          return handlerResult(
+            `The workspace has ${money(lifetimeValue, true)} in lifetime customer value across ${customers.length} accounts. Paid orders total ${money(paidRevenue, true)}, with ${money(outstanding, true)} still outstanding on open invoices.${top ? ` Your most profitable customer is ${top.name} at ${top.spend}.` : ""}`,
+            {
+              lifetimeValue: money(lifetimeValue, true),
+              paidOrderRevenue: money(paidRevenue, true),
+              outstanding: money(outstanding, true),
+              customers: customers.length,
+              paidOrders: paidOrders.length,
+              topCustomer: top ? { name: top.name, spend: top.spend, plan: top.plan } : null,
+            }
+          )
+        }
+        case "plan-leaders": {
+          adapter.navigate("analytics")
+          const plans = ["Foundry", "Workshop", "Bench"] as const
+          const leaders = plans.map((plan) => {
+            const onPlan = adapter.getCustomers().filter((c) => c.plan === plan)
+            const top = onPlan.sort((a, b) => moneyValue(b.spend) - moneyValue(a.spend))[0]
+            return { plan, customer: top ?? null }
+          })
+          const message = leaders
+            .map((l) => (l.customer ? `${l.plan}: ${l.customer.name} (${l.customer.spend})` : `${l.plan}: none yet`))
+            .join(". ")
+          return handlerResult(`Top customer per plan — ${message}.`, leaders)
         }
         case "create-customer": {
           const name = text(input, "name")

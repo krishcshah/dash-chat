@@ -108,7 +108,7 @@ const dashchat = createDashRuntime({
 
 ### Northgrid demo
 
-**Northgrid** is a complete fictional SaaS dashboard (analytics, customers, orders, invoices, approvals, settings) built with Next.js, showing DashChat embedded across normal product workflows rather than a standalone chat window. It registers **32 capabilities across 9 routes** and shares the *same* application handlers between manual clicks and assistant commands — so voice never becomes a second copy of your business logic.
+**Northgrid** is a complete fictional SaaS dashboard (analytics, customers, orders, invoices, approvals, settings) built with Next.js, showing DashChat embedded across normal product workflows rather than a standalone chat window. It registers **35 capabilities across 9 routes** — including data-grounded reads like "most profitable customer," plan leaders, and revenue rollups — and shares the *same* application handlers between manual clicks and assistant commands — so voice never becomes a second copy of your business logic.
 
 ## Safety model
 
