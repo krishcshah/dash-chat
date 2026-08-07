@@ -34,16 +34,10 @@
     "lint": "tsc -p tsconfig.json --noEmit",
     "test": "npm run build && node --test tests/*.test.mjs"
   },
-  "peerDependencies": {
-    "@google/genai": ">=2.11.0"
-  },
-  "peerDependenciesMeta": {
-    "@google/genai": {
-      "optional": true
-    }
+  "dependencies": {
+    "@google/genai": "^2.11.0"
   },
   "devDependencies": {
-    "@google/genai": "^2.11.0",
     "typescript": "^5"
   }
 }
