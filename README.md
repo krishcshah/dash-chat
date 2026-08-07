@@ -2,11 +2,21 @@
 
 **A smart way to talk to your dashboards.**
 
-[Live demo](https://dashchat.vercel.app/) · [Why we built it](./ABOUT_PROJECT.md) · [Product notes](./PRODUCT.md)
+[▶ Live demo](https://dash-chat-demo.vercel.app/) · [Why we built it](./ABOUT_PROJECT.md) · [Product notes](./PRODUCT.md)
 
-DashChat is a framework-agnostic TypeScript SDK for adding a natural-language and live-voice layer to real product UIs. Instead of a chatbot bolted onto the side of your app — or a browser agent scraping pixels and guessing where to click — DashChat gives the model an explicit map of your app's routes, typed inputs, handlers, and confirmation policies.
+> Ask the _Northgrid_ demo things like **"Who's our most profitable customer?"**, **"Show last week's orders,"** or **"Draft an invoice for Meridian Labs for $4,900"** — by typing or by voice. It reads, ranks, filters, and mutates real product state through the same handlers the buttons use.
+
+## What DashChat is
+
+DashChat is a framework-agnostic TypeScript SDK for adding a natural-language and live-voice layer to a real product. Instead of a chatbot bolted onto the side of your app — or a browser agent scraping pixels and guessing where to click — DashChat gives the model an **explicit map** of your app's routes, typed inputs, handlers, and confirmation policies.
 
 The model interprets intent. DashChat validates the request and enforces policy. **Your application keeps authority over execution.**
+
+### Why it feels different
+
+- **It's grounded in your data, not the page.** "Most profitable customer" runs a ranking capability over the actual customer table and returns the answer — it doesn't describe a screenshot.
+- **Reads are instant, writes are guarded.** A destructive or money-moving action renders a preview and needs an explicit confirmation it can never give itself.
+- **Voice and clicks are the same handler.** There's no second copy of your business logic to drift out of sync.
 
 ## Mission statement
 
