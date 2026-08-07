@@ -152,9 +152,9 @@ powershell -ExecutionPolicy Bypass -File .\setup-windows.ps1
 
 This is a two-package monorepo. The `demo/` Next.js app consumes the local `sdk/` package via a `file:../sdk` dependency. To deploy:
 
-1. In Vercel, set the **Root Directory** to `demo`.
-2. Make sure `installCommand` runs the SDK build first (Vercel runs `prepare` for local `file:` deps automatically), or use the included root build script.
-3. Add `DASHCHAT_GEMINI_API_KEY` to your Vercel project environment variables.
+1. Import the repo, and in the Vercel project settings set **Root Directory** to `demo` (this is a dashboard setting — it cannot live in `vercel.json`).
+2. The included `vercel.json` wires the install/build commands: it installs the SDK, then installs + builds the demo (`next build`). The SDK also self-builds on install via its `prepare` script.
+3. Add `DASHCHAT_GEMINI_API_KEY` to your Vercel project environment variables, then deploy.
 
 ## Validation
 
