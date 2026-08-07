@@ -2,18 +2,13 @@
   "name": "dash-chat",
   "version": "0.1.0",
   "private": true,
-  "description": "DashChat — a smart way to talk to your dashboards. Framework-agnostic capability runtime plus a Next.js demo dashboard (Northgrid).",
+  "description": "DashChat — a smart way to talk to your dashboards. Framework-agnostic capability runtime (@dashchat/sdk) plus a Next.js demo dashboard (Northgrid).",
   "type": "module",
-  "workspaces": [
-    "sdk",
-    "demo"
-  ],
   "scripts": {
     "build:sdk": "npm --prefix sdk run build",
     "dev": "npm --prefix demo run dev",
     "build": "npm --prefix demo run build",
-    "test": "npm --prefix sdk run test",
-    "typecheck": "npm --prefix sdk run typecheck && npm --prefix demo run typecheck"
+    "test": "npm --prefix sdk run test"
   },
   "engines": {
     "node": ">=20"
